@@ -53,7 +53,7 @@ jobs:
       - name: Deploy
         env:
           ENV_NAME: local
-          CORS_DOMAIN: *
+          CORS_DOMAIN: "*"
           LOG_LEVEL: debug
         run: cdk deploy --require-approval=never
   aws_cdk_production:
@@ -80,7 +80,7 @@ jobs:
         id: deploy
         env:
           ENV_NAME: prod
-          CORS_DOMAIN: *
+          CORS_DOMAIN: "*"
           LOG_LEVEL: info
         run: cdk deploy --require-approval=never
       - name: If deployment succeeds, automatically merge PR
