@@ -4,6 +4,7 @@
   "description": "Sample endpoints to use when learning FE",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
