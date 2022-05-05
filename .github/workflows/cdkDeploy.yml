@@ -15,11 +15,11 @@ jobs:
       - name: Checkout branches
         run: |
           git fetch --no-tags origin +refs/heads/*:refs/remotes/origin/*
-      - name: Verify branch is up-to-date with master branch
+      - name: Verify branch is up-to-date with main branch
         run: |
-          if [ $(git log origin/${{ github.head_ref }}..origin/master --oneline | wc -l) -ne 0 ]
+          if [ $(git log origin/${{ github.head_ref }}..origin/main --oneline | wc -l) -ne 0 ]
           then
-            echo "Branch is not up-to-date with master branch!"
+            echo "Branch is not up-to-date with main branch!"
             exit 1
           fi
       - name: Comment on failure
@@ -29,7 +29,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            Your branch is not up-to-date with `master`! Please rebase before proceeding.
+            Your branch is not up-to-date with `main`! Please rebase before proceeding.
   aws_cdk:
     if: github.event.label.name == 'test'
     runs-on: ubuntu-latest
