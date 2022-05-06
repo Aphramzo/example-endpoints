@@ -1,0 +1,21 @@
+name: Remove labels
+
+on: pull_request
+
+jobs:
+  remove_label:
+    runs-on: ubuntu-latest
+    name: remove label
+    steps:
+      - name: remove test
+        uses: buildsville/add-remove-label@v1
+        with:
+          token: ${{secrets.GITHUB_TOKEN}}
+          label: test
+          type: remove
+      - name: remove deploy
+        uses: buildsville/add-remove-label@v1
+        with:
+          token: ${{secrets.GITHUB_TOKEN}}
+          label: deploy
+          type: remove

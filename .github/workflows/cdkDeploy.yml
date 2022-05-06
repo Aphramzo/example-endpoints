@@ -1,0 +1,94 @@
+name: Deployment
+
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  branch-up-to-date:
+    name: "Is branch up-to-date?"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest
+        uses: actions/checkout@v2
+
+      - name: Checkout branches
+        run: |
+          git fetch --no-tags origin +refs/heads/*:refs/remotes/origin/*
+      - name: Verify branch is up-to-date with main branch
+        run: |
+          if [ $(git log origin/${{ github.head_ref }}..origin/main --oneline | wc -l) -ne 0 ]
+          then
+            echo "Branch is not up-to-date with main branch!"
+            exit 1
+          fi
+      - name: Comment on failure
+        if: failure()
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            Your branch is not up-to-date with `main`! Please rebase before proceeding.
+  aws_cdk:
+    if: github.event.label.name == 'test'
+    runs-on: ubuntu-latest
+    needs: branch-up-to-date
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-1
+      - name: Update NPM
+        run: sudo npm install -g npm@8.1.0
+      - name: Install CDK
+        run: sudo npm install -g aws-cdk
+      - name: Setup package and build
+        run: |
+          npm ci && npm run build
+      - name: Deploy
+        env:
+          ENV_NAME: local
+          CORS_DOMAIN: "*"
+          LOG_LEVEL: debug
+        run: cdk deploy --require-approval=never
+  aws_cdk_production:
+    if: github.event.label.name == 'deploy'
+    runs-on: ubuntu-latest
+    needs: branch-up-to-date
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-1
+      - name: Update NPM
+        run: sudo npm install -g npm@8.1.0
+      - name: Install CDK
+        run: sudo npm install -g aws-cdk
+      - name: Setup package and build
+        run: |
+          npm ci && npm run build
+      - name: deploy
+        id: deploy
+        env:
+          ENV_NAME: prod
+          CORS_DOMAIN: "*"
+          LOG_LEVEL: info
+        run: cdk deploy --require-approval=never
+      - name: If deployment succeeds, automatically merge PR
+        if: steps.deploy.outcome == 'success'
+        uses: "pascalgn/automerge-action@v0.12.0"
+        env:
+          # since we are expecting this action to trigger another action (PR closed), we need to use a PAT
+          # source: https://docs.github.com/en/free-pro-team@latest/actions/reference/events-that-trigger-workflows#triggering-new-workflows-using-a-personal-access-token
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          MERGE_LABELS: ""
+          MERGE_METHOD: "squash"

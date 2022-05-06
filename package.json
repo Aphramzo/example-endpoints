@@ -1,0 +1,38 @@
+{
+  "name": "example-endpoints",
+  "version": "1.0.0",
+  "description": "Sample endpoints to use when learning FE",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aphramzo/example-endpoints.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Aphramzo/example-endpoints/issues"
+  },
+  "homepage": "https://github.com/Aphramzo/example-endpoints#readme",
+  "devDependencies": {
+    "@aws-cdk/aws-apigateway": "^1.155.0",
+    "@aws-cdk/aws-lambda": "^1.155.0",
+    "@aws-cdk/aws-lambda-nodejs": "^1.155.0",
+    "@aws-cdk/core": "^1.155.0",
+    "@tsconfig/node14": "^1.0.1",
+    "@types/aws-lambda": "^8.10.95",
+    "@types/debug": "^4.1.7",
+    "aws-lambda": "^1.0.7",
+    "aws-sdk": "^2.1129.0",
+    "prettier": "^2.6.2",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.4"
+  },
+  "dependencies": {
+    "aws-xray-sdk-core": "^3.3.5",
+    "debug": "^4.3.4"
+  }
+}
