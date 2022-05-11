@@ -47,6 +47,10 @@ export class ExampleEndpointsStack extends cdk.Stack {
       },
     });
 
+    plan.addApiStage({
+      stage: api.deploymentStage,
+    });
+
     const apiKey = api.addApiKey("ApiKey");
     plan.addApiKey(apiKey);
 
