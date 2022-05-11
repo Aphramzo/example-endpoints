@@ -55,7 +55,10 @@ export class ExampleEndpointsStack extends cdk.Stack {
     const loginResource = api.root.addResource("login");
     loginResource.addMethod(
       "POST",
-      new apigateway.LambdaIntegration(loginFunction)
+      new apigateway.LambdaIntegration(loginFunction),
+      {
+        apiKeyRequired: true,
+      }
     );
 
     new cdk.CfnOutput(this, "apiUrl", { value: api.url || "" });
