@@ -25,7 +25,19 @@ export class ExampleEndpointsStack extends cdk.Stack {
     } = process.env as DefaultProcessEnv;
     const stackName = `${envName}-example-endpoints`;
 
-    const api = new apigateway.RestApi(this, `${stackName}-api`);
+    const api = new apigateway.RestApi(this, `${stackName}-api`, {
+      defaultCorsPreflightOptions: {
+        allowHeaders: [
+          "Content-Type",
+          "X-Amz-Date",
+          "Authorization",
+          "X-Api-Key",
+        ],
+        allowMethods: ["OPTIONS", "GET", "POST", "PUT", "PATCH", "DELETE"],
+        allowCredentials: true,
+        allowOrigins: [corsDomain],
+      },
+    });
 
     const plan = api.addUsagePlan("UsagePlan", {
       name: "Easy",
@@ -53,6 +65,9 @@ export class ExampleEndpointsStack extends cdk.Stack {
     );
 
     const loginResource = api.root.addResource("login");
+    // loginResource.addMethod("OPTIONS", apigateway.LambdaIntegration, {
+    //   apiKeyRequired: true,
+    // });
     loginResource.addMethod(
       "POST",
       new apigateway.LambdaIntegration(loginFunction),
