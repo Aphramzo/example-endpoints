@@ -68,13 +68,29 @@ export class ExampleEndpointsStack extends cdk.Stack {
       defaultLambdaEnvs
     );
 
+    const getUserFunction = createFunction(
+      this,
+      "getUser",
+      "getUser",
+      `src/handlers/handler.ts`,
+      defaultLambdaEnvs
+    );
+
     const loginResource = api.root.addResource("login");
-    // loginResource.addMethod("OPTIONS", apigateway.LambdaIntegration, {
-    //   apiKeyRequired: true,
-    // });
+
     loginResource.addMethod(
       "POST",
       new apigateway.LambdaIntegration(loginFunction),
+      {
+        apiKeyRequired: true,
+      }
+    );
+
+    const userResource = api.root.addResource("user");
+
+    userResource.addMethod(
+      "GET",
+      new apigateway.LambdaIntegration(getUserFunction),
       {
         apiKeyRequired: true,
       }
