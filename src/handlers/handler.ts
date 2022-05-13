@@ -55,7 +55,7 @@ async function asyncGetUser(
     roles: [],
   };
 
-  for (var i = 0; i > 10; i++) {
+  for (var i = 0; i < fakerator.random.number(2, 15); i++) {
     user.roles.push(generateRole());
   }
 
