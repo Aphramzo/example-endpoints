@@ -32,7 +32,18 @@ function generateRole(): Role {
 async function asyncLogin(
   event: APIGatewayEvent
 ): Promise<APIGatewayProxyResult> {
-  logger("in asyncLogin handler", event.body);
+  const body = JSON.parse(event.body || "");
+  // just some stupid basic options for testing different responses
+  if (!body.password || !body.username) {
+    return {
+      statusCode: 400,
+      body: "Invalid Request. username and password required",
+    };
+  }
+
+  if (body.password === "password") {
+    return { statusCode: 401, body: "Invalid" };
+  }
 
   return {
     statusCode: 200,
